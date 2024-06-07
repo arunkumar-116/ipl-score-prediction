@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.jpg') }}">
+    <title>Score Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles1.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏆 Predicted Score 🏆</h1>
+        </header>
+        <main>
+            <div class="prediction">
+                <h2>The predicted score is:</h2>
+                <h3>{{ my_prediction }}</h3>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

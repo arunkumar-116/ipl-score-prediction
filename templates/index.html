@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏏 IPL Score Predictor 🏏</title>
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.jpg') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('static/p3.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 69, 0, 0.9));
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        input[type="number"], select, input[type="text"] {
+            width: 180%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input[type="number"]:focus, select:focus, input[type="text"]:focus {
+            border-color: #ff4500;
+            outline: none;
+        }
+
+        .submit-btn {
+            background: #ff4500;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #d7381f;
+        }
+
+        .custom-select {
+            position: relative;
+            width: 90%;
+        }
+
+        .custom-select select {
+            display: none; /* hide original SELECT element */
+        }
+
+        .select-selected {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            color: #333;
+            text-align: center;
+            padding-right: 30px; /* Add padding for the arrow */
+            position: relative;
+        }
+
+        .select-selected:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-color: #333 transparent transparent transparent;
+            transform: translateY(-50%);
+        }
+
+        .select-selected.select-arrow-active:after {
+            border-color: transparent transparent #333 transparent;
+        }
+
+        .select-items {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            z-index: 99;
+            margin-top: 5px;
+            display: none;
+            color: #333;
+        }
+
+        .select-items div {
+            padding: 10px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .select-items div:hover {
+            background-color: #ff4500;
+            color: #fff;
+        }
+
+        .select-hide {
+            display: none;
+        }
+
+        .select-selected.select-arrow-active + .select-items {
+            display: block;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            const battingTeam = document.getElementById('batting-team').value;
+            const bowlingTeam = document.getElementById('bowling-team').value;
+            const overs = document.getElementById('overs').value;
+            const runs = document.getElementById('runs').value;
+            const wickets = document.getElementById('wickets').value;
+            const runsInPrev5 = document.getElementById('runs_in_prev_5').value;
+            const wicketsInPrev5 = document.getElementById('wickets_in_prev_5').value;
+
+            if (!battingTeam || !bowlingTeam || overs === '' || runs === '' || wickets === '' || runsInPrev5 === '' || wicketsInPrev5 === '') {
+                alert("Please enter all columns. ⚠️");
+                return false;
+            }
+
+            if (isNaN(overs) || isNaN(runs) || isNaN(wickets) || isNaN(runsInPrev5) || isNaN(wicketsInPrev5)) {
+                alert("Please enter valid numbers. 😢");
+                return false;
+            }
+
+            if (parseInt(overs) > 20) {
+                alert("Overs should not exceed 20. 😢");
+                return false;
+            }
+
+            if (parseInt(wickets) > 10 || parseInt(wicketsInPrev5) > 10) {
+                alert("Wickets should not be more than 10. 😢");
+                return false;
+            }
+
+            return true;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const x = document.getElementsByClassName("custom-select");
+            const l = x.length;
+            for (let i = 0; i < l; i++) {
+                const selElmnt = x[i].getElementsByTagName("select")[0];
+                const ll = selElmnt.length;
+                const a = document.createElement("DIV");
+                a.setAttribute("class", "select-selected");
+                a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+                x[i].appendChild(a);
+                const b = document.createElement("DIV");
+                b.setAttribute("class", "select-items select-hide");
+                for (let j = 1; j < ll; j++) {
+                    const c = document.createElement("DIV");
+                    c.innerHTML = selElmnt.options[j].innerHTML;
+                    c.addEventListener("click", function(e) {
+                        const y = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                        const yl = y.length;
+                        const h = this.parentNode.previousSibling;
+                        for (let k = 0; k < yl; k++) {
+                            if (y.options[k].innerHTML == this.innerHTML) {
+                                y.selectedIndex = k;
+                                h.innerHTML = this.innerHTML;
+                                const sameAsSelected = this.parentNode.getElementsByClassName("same-as-selected");
+                                const samel = sameAsSelected.length;
+                                for (let i = 0; i < samel; i++) {
+                                    sameAsSelected[i].removeAttribute("class");
+                                }
+                                this.setAttribute("class", "same-as-selected");
+                                break;
+                            }
+                        }
+                        h.click();
+                    });
+                    b.appendChild(c);
+                }
+                x[i].appendChild(b);
+                a.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    closeAllSelect(this);
+                    this.nextSibling.classList.toggle("select-hide");
+                    this.classList.toggle("select-arrow-active");
+                });
+            }
+
+            function closeAllSelect(elmnt) {
+                const x = document.getElementsByClassName("select-items");
+                const y = document.getElementsByClassName("select-selected");
+                const xl = x.length;
+                const yl = y.length;
+                for (let i = 0; i < yl; i++) {
+                    if (elmnt == y[i]) {
+                        continue;
+                    }
+                    y[i].classList.remove("select-arrow-active");
+                }
+                for (let i = 0; i < xl; i++) {
+                    x[i].classList.add("select-hide");
+                }
+            }
+
+            document.addEventListener("click", closeAllSelect);
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏏 IPL Score Predictor 🏏</h1>
+        </header>
+        <main>
+            <form action="/predict_score" method="POST" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="batting-team">Select Batting Team:</label>
+                    <div class="custom-select">
+                        <select id="batting-team" name="batting-team">
+                            <option value="" disabled selected>🏏 Select Batting Team</option>
+                            <option value="Chennai Super Kings">Chennai Super Kings</option>
+                            <option value="Delhi Daredevils">Delhi Daredevils</option>
+                            <option value="Kings XI Punjab">Kings XI Punjab</option>
+                            <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                            <option value="Mumbai Indians">Mumbai Indians</option>
+                            <option value="Rajasthan Royals">Rajasthan Royals</option>
+                            <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+                            <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bowling-team">Select Bowling Team:</label>
+                    <div class="custom-select">
+                        <select id="bowling-team" name="bowling-team">
+                            <option value="" disabled selected>🏏 Select Bowling Team</option>
+                            <option value="Chennai Super Kings">Chennai Super Kings</option>
+                            <option value="Delhi Daredevils">Delhi Daredevils</option>
+                            <option value="Kings XI Punjab">Kings XI Punjab</option>
+                            <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                            <option value="Mumbai Indians">Mumbai Indians</option>
+                            <option value="Rajasthan Royals">Rajasthan Royals</option>
+                            <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+                            <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="overs">Current Overs:</label>
+                    <input type="number" id="overs" name="overs" step="0.1" min="0" max="20">
+                </div>
+                <div class="form-group">
+                    <label for="runs">Current Runs:</label>
+                    <input type="number" id="runs" name="runs" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="wickets">Current Wickets:</label>
+                    <input type="number" id="wickets" name="wickets" min="0" max="10">
+                </div>
+                <div class="form-group">
+                    <label for="runs_in_prev_5">Runs in Last 5 Overs:</label>
+                    <input type="number" id="runs_in_prev_5" name="runs_in_prev_5" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="wickets_in_prev_5">Wickets Lost in Last 5 Overs:</label>
+                    <input type="number" id="wickets_in_prev_5" name="wickets_in_prev_5" min="0" max="10">
+                </div>
+                <button type="submit" class="submit-btn">🔮 Predict Score</button>
+            </form>
+        </main>
+    </div>
+</body>
+</html>

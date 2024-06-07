@@ -1,0 +1,52 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url('p3.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+}
+
+
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    background-image: url(); /* Add your background image URL here */
+    background-size: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-family: 'Georgia', serif;
+    color: #007bff;
+    margin: 0;
+    font-size: 2.5em;
+    animation: slideDown 1s ease-in-out;
+}
+
+.prediction {
+    background-color: #28a745;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: slideUp 1s ease-in-out;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+h3 {
+    margin: 10px 0;
+    font-size: 3em;
+}

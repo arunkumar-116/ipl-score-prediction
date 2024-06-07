@@ -1,4 +1,5 @@
 # IPL Score Prediction ML Web Application
+- **Develop**: A R Arun Kumar 
 
 This web application predicts the total score of an IPL match based on the input of the current score, runs, and wickets. It utilizes machine learning algorithms to make these predictions.
 
